@@ -6,7 +6,7 @@ Highly secure and safe api
 
 http://localhost:8080
 
-## open Endpoints
+## Endpoints
 
 - [user](src/user/readme.md) : `[GET,POST,DELET,UPDATE] /user`
 
