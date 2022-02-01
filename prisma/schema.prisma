@@ -1,0 +1,112 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(uuid())
+  username   String   @unique
+  name       String
+  lastname   String
+  password   String
+  totalIncom String   @default("0")
+  isGammer   Boolean  @default(false)
+  followerID String?
+  gameId     String?
+  vidosID    String?
+  vidos      videos[] @relation(fields: [vidosID], references: [id])
+
+  follower User?     @relation("followerby", fields: [followerID], references: [id])
+  User     User[]    @relation("followerby")
+  games    Game[]    @relation(fields: [gameId], references: [id])
+  leder    Team[]    @relation("leder")
+  mamber   Team[]    @relation("mamber")
+  Like     Like[]
+  // likeId   String?
+  Commant  Commant[]
+  // commantId String?
+}
+
+model Game {
+  id            String      @id @default(uuid())
+  game_name     String      @unique
+  download_link String
+  price         String
+  User          User[]
+  Turnament     Turnament[]
+}
+
+model Team {
+  id          String @id @default(uuid())
+  team_name   String
+  total_score Float  @default(0.0)
+  leader      User   @relation("leder", fields: [leaderId], references: [id])
+
+  leaderId String
+  mamberId String
+  mamber   User[]      @relation("mamber", fields: [mamberId], references: [id])
+  Team1    Turnament[] @relation("team1")
+  Team2    Turnament[] @relation("team2")
+  Orgnaser Orgnaser[]
+  // orgnaserId String?
+}
+
+model Turnament {
+  id          String     @id @default(uuid())
+  Team1       Team       @relation("team1", fields: [Team1ID], references: [id])
+  Team2       Team       @relation("team2", fields: [Team2ID], references: [id])
+  game        Game       @relation(fields: [gameID], references: [id])
+  scroeBoards ScoreBoard @relation(fields: [scroeID], references: [id])
+  scroeID     String
+  gameID      String
+  Team1ID     String
+  Team2ID     String
+}
+
+model Orgnaser {
+  id      String @id @default(uuid())
+  Teams   Team[] @relation(fields: [teamsID], references: [id])
+  teamsID String
+}
+
+model ScoreBoard {
+  id        String      @id @default(uuid())
+  json      String
+  Turnament Turnament[]
+}
+
+model videos {
+  id       String  @id @default(uuid())
+  title    String
+  descrion String
+  video    String
+  shear    String
+  itStream Boolean @default(false)
+  likes    Like[]  @relation(fields: [likeid], references: [id])
+  User     User[]
+  likeid   String
+}
+
+model Like {
+  id     String   @id @default(uuid())
+  likeby User[]   @relation(fields: [userid], references: [id])
+  userid String
+  videos videos[]
+}
+
+model Commant {
+  id                 String    @id @default(uuid())
+  user               User[]    @relation(fields: [userid], references: [id])
+  userid             String
+  comment            String
+  commentscomment    Commant[] @relation("comments", fields: [commentscommentsID], references: [id])
+  commentscommentsID String
+  Commant            Commant[] @relation("comments")
+}
