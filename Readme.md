@@ -1,3 +1,9 @@
+# Server start
+
+```base
+nodemon src/index.ts
+```
+
 # E-SPORT EXAMPAL
 
 Highly secure and safe api
