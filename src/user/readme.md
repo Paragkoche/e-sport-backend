@@ -4,7 +4,7 @@ use to collect and send user data
 
 ## Base URL
 
-```http
+```text
 http://localhost:8080/user
 ```
 
