@@ -11,46 +11,73 @@ datasource db {
 }
 
 model User {
-  id         String   @id @default(uuid())
-  username   String   @unique
-  name       String
-  lastname   String
-  password   String
-  totalIncom String   @default("0")
-  isGammer   Boolean  @default(false)
-  followerID String?
-  gameId     String?
-  vidosID    String?
-  vidos      videos[] @relation(fields: [vidosID], references: [id])
+  id          String   @id @default(uuid())
+  username    String   @unique
+  profile_pic String
+  name        String
+  lastname    String
+  password    String
+  totalIncom  String   @default("0")
+  isGammer    Boolean  @default(false)
+  followerID  String?
+  gameId      String?
+  vidosID     String?
+  createAt    DateTime @default(now())
+  updateAt    DateTime @default(now())
+  vidos       videos[] @relation(fields: [vidosID], references: [id])
 
-  follower User?     @relation("followerby", fields: [followerID], references: [id])
+  follower User[]    @relation("followerby", fields: [followerID], references: [id])
   User     User[]    @relation("followerby")
-  games    Game[]    @relation(fields: [gameId], references: [id])
+  games    Game[]    @relation("gamse", fields: [gameId], references: [id])
   leder    Team[]    @relation("leder")
   mamber   Team[]    @relation("mamber")
   Like     Like[]
-  // likeId   String?
+  game_rat Game[]    @relation("rate")
   Commant  Commant[]
-  // commantId String?
+
 }
 
 model Game {
-  id            String      @id @default(uuid())
-  game_name     String      @unique
-  download_link String
-  price         String
-  User          User[]
-  Turnament     Turnament[]
+  id           String       @id @default(uuid())
+  game_name    String       @unique
+  slug         String
+  rating       Float        @default(0.0)
+  downloads    links[]      @relation(fields: [downloadID], references: [id])
+  downloadID   String?
+  price        String
+  poster       String
+  User         User[]       @relation("gamse")
+  Turnament    Turnament[]
+  createAt     DateTime     @default(now())
+  updateAt     DateTime     @default(now())
+  scrennshot   screenshot[] @relation(fields: [screenshotID], references: [id])
+  screenshotID String?
+  ratby        User[]       @relation("rate")
+
+}
+
+model links {
+  id       String @id @default(uuid())
+  platform String
+  links    String
+  Game     Game[]
+}
+
+model screenshot {
+  id   String @id @default(uuid())
+  img  String
+  Game Game[]
 }
 
 model Team {
   id          String @id @default(uuid())
   team_name   String
+  team_poster String
   total_score Float  @default(0.0)
   leader      User   @relation("leder", fields: [leaderId], references: [id])
 
   leaderId String
-  mamberId String
+  mamberId String?
   mamber   User[]      @relation("mamber", fields: [mamberId], references: [id])
   Team1    Turnament[] @relation("team1")
   Team2    Turnament[] @relation("team2")
@@ -60,6 +87,7 @@ model Team {
 
 model Turnament {
   id          String     @id @default(uuid())
+  name        String     @unique
   Team1       Team       @relation("team1", fields: [Team1ID], references: [id])
   Team2       Team       @relation("team2", fields: [Team2ID], references: [id])
   game        Game       @relation(fields: [gameID], references: [id])
@@ -71,9 +99,11 @@ model Turnament {
 }
 
 model Orgnaser {
-  id      String @id @default(uuid())
-  Teams   Team[] @relation(fields: [teamsID], references: [id])
-  teamsID String
+  id       String @id @default(uuid())
+  username String @unique
+  password String
+  Teams    Team[] @relation(fields: [teamsID], references: [id])
+  teamsID  String
 }
 
 model ScoreBoard {
@@ -83,15 +113,16 @@ model ScoreBoard {
 }
 
 model videos {
-  id       String  @id @default(uuid())
-  title    String
-  descrion String
-  video    String
-  shear    String
-  itStream Boolean @default(false)
-  likes    Like[]  @relation(fields: [likeid], references: [id])
-  User     User[]
-  likeid   String
+  id        String  @id @default(uuid())
+  title     String
+  descrion  String
+  video     String
+  thumbnail String
+  shear     String  @default("0")
+  itStream  Boolean @default(false)
+  likes     Like[]  @relation(fields: [likeid], references: [id])
+  User      User[]
+  likeid    String?
 }
 
 model Like {
